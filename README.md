@@ -30,6 +30,3 @@ python prepare.py /mydata/c4kc-kits
 
 + train using published/available cyclegan. see `model-0`
 
-```
-
-```

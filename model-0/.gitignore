@@ -1,2 +1,4 @@
 log/*
 static/*
+submit.condor
+run.sh

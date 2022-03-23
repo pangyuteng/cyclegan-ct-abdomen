@@ -23,7 +23,7 @@ aug_pipeline = A.Compose([
 MIN_VAL,MAX_VAL = -1000,1000
 
 class DataLoader():
-    def __init__(self, dataset_name, augment=False, img_res=(512,512)):
+    def __init__(self, dataset_name, augment=False, img_res=(256,256)):
         
         if dataset_name == 'c4kc-kits':
             self.mydf = pd.read_csv("../prepare/data.csv")
@@ -119,17 +119,17 @@ if __name__ == "__main__":
     dl = DataLoader('c4kc-kits',augment=True)
     
     out = dl.load_data("noncontrast",batch_size=2)
-    assert(out.shape==(2,512,512))
+    assert(out.shape==(2,256,256))
     
     out = dl.load_data("arterial",batch_size=2)
-    assert(out.shape==(2,512,512))
+    assert(out.shape==(2,256,256))
     batch_size = 8
     for n,batch in zip(range(1),dl.load_batch(batch_size=batch_size)):
         A, B = batch
         A = (A*255).astype(np.uint8)
         B = (B*255).astype(np.uint8)
-        assert(A.shape==(batch_size,512,512))
-        assert(B.shape==(batch_size,512,512))
+        assert(A.shape==(batch_size,256,256))
+        assert(B.shape==(batch_size,256,256))
         for n in range(batch_size):
             imageio.imwrite(f"static/noncontrast-{n}.png",A[n,:,:].squeeze())
             imageio.imwrite(f"static/arterial-{n}.png",B[n,:,:].squeeze())
