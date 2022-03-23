@@ -175,8 +175,8 @@ class CycleGAN():
                 # ----------------------
 
                 # Translate images to opposite domain
-                print(imgs_A.shape,imgs_B.shape)
-                print('!!!!!!!!!!!!!!!!!!!11')
+                #print(imgs_A.shape,imgs_B.shape)
+                #print('!!!!!!!!!!!!!!!!!!!11')
                 fake_B = self.g_AB.predict(imgs_A)
                 fake_A = self.g_BA.predict(imgs_B)
 
@@ -269,4 +269,4 @@ class CycleGAN():
 
 if __name__ == '__main__':
     gan = CycleGAN()    
-    gan.train(epochs=200, batch_size=1, sample_interval=200)
+    gan.train(epochs=200, batch_size=8, sample_interval=200)

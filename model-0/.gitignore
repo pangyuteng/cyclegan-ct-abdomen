@@ -1,5 +1,6 @@
 log/*
 static/*
 images/*
+saved_model/*
 submit.condor
 run.sh
