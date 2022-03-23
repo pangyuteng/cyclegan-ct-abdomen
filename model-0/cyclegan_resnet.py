@@ -44,24 +44,21 @@ class CycleGAN():
         self.metric_summary_callback = MetricSummaryCallback(self.log_dir)
         
         # Input shape
-        self.img_rows = 512
-        self.img_cols = 512
+        self.img_rows = 256
+        self.img_cols = 256
         self.channels = 1
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
 
         # Configure data loader
         self.dataset_name = 'c4kc-kits'
         self.data_loader = DataLoader(dataset_name=self.dataset_name,
-                                      img_res=(self.img_rows, self.img_cols))
+                                      img_res=(self.img_rows, self.img_cols),augment=True)
 
 
         # Calculate output shape of D (PatchGAN)
-        patch = int(self.img_rows / 2**4)
+        self.var = 3
+        patch = int(self.img_rows / 2**self.var)
         self.disc_patch = (patch, patch, 1)
-        self.disc_patch = (64,64,1)
-        # Number of filters in the first layer of G and D
-        self.gf = 32
-        self.df = 64
 
         # Loss weights
         self.lambda_cycle = 10.0                    # Cycle-consistency loss
@@ -86,14 +83,14 @@ class CycleGAN():
         #-------------------------
 
         # Build the generators
-        self.g_AB = self.build_generator(name="g_AB",filters=64) # ape 2 human
-        self.g_BA = self.build_generator(name="g_BA",filters=64) # human 2 ape
+        self.g_AB = self.build_generator(name="g_AB")
+        self.g_BA = self.build_generator(name="g_BA")
 
-        if False:
+        if True:
             print("self.g_AB")
             self.g_AB.summary()
-            print("self.g_BA")
-            self.g_BA.summary()
+            print("self.d_A")
+            self.d_A.summary()
         
         w_list = ['saved_model/dA.h5','saved_model/dB.h5','saved_model/AB.h5','saved_model/BA.h5']
         if all([os.path.exists(x) for x in w_list]):
@@ -138,11 +135,23 @@ class CycleGAN():
                                             self.lambda_id, self.lambda_id ],
                             optimizer=optimizer)
 
-    def build_generator(self,name,filters):
-        return get_resnet_generator(name=name,filters=filters,input_img_size=self.img_shape)
+    def build_generator(self,name):
+        kwargs = dict(
+            filters=64,
+            num_downsampling_blocks=self.var,
+            num_residual_blocks=12,
+            num_upsample_blocks=self.var,            
+            input_img_size=self.img_shape
+        )
+        return get_resnet_generator(name=name,**kwargs)
 
     def build_discriminator(self,name):
-        return get_discriminator(name=name,input_img_size=self.img_shape)
+        kwargs = dict(
+            filters=64,
+            num_downsampling=3,
+            input_img_size=self.img_shape,
+        )
+        return get_discriminator(name=name,**kwargs)
 
     def train(self, epochs, batch_size=1, sample_interval=50):
         
@@ -166,6 +175,8 @@ class CycleGAN():
                 # ----------------------
 
                 # Translate images to opposite domain
+                print(imgs_A.shape,imgs_B.shape)
+                print('!!!!!!!!!!!!!!!!!!!11')
                 fake_B = self.g_AB.predict(imgs_A)
                 fake_A = self.g_BA.predict(imgs_B)
 
@@ -217,6 +228,7 @@ class CycleGAN():
                 # If at save interval => save generated image samples
                 if batch_i % sample_interval == 0:
                     self.sample_images(epoch, batch_i)
+                    os.makedirs("saved_model",exist_ok=True)
                     self.g_AB.save_weights("saved_model/AB.h5")
                     self.g_BA.save_weights("saved_model/BA.h5")
                     self.d_A.save_weights("saved_model/dA.h5")
@@ -226,12 +238,8 @@ class CycleGAN():
         os.makedirs('images/%s' % self.dataset_name, exist_ok=True)
         r, c = 2, 3
 
-        imgs_A = self.data_loader.load_data(domain="noncontrast", batch_size=1, is_testing=True)#False)#
-        imgs_B = self.data_loader.load_data(domain="arterial", batch_size=1, is_testing=True)#False)#
-
-        # Demo (for GIF)
-        #imgs_A = self.data_loader.load_img('datasets/apple2orange/testA/n07740461_1541.jpg')
-        #imgs_B = self.data_loader.load_img('datasets/apple2orange/testB/n07749192_4241.jpg')
+        imgs_A = self.data_loader.load_data(domain="noncontrast", batch_size=1)
+        imgs_B = self.data_loader.load_data(domain="arterial", batch_size=1)
 
         # Translate images to the other domain
         fake_B = self.g_AB.predict(imgs_A)

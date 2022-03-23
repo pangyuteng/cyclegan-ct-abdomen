@@ -194,9 +194,9 @@ c7s1-3 => Last conv block with `tanh` activation, filter size of 7.
 def get_resnet_generator(
     input_img_size=INPUT_IMG_SIZE,
     filters=64,
-    num_downsampling_blocks=4,
+    num_downsampling_blocks=2,
     num_residual_blocks=12,
-    num_upsample_blocks=4,
+    num_upsample_blocks=2,
     gamma_initializer=gamma_init,
     name=None,
 ):

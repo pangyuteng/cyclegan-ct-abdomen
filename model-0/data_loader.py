@@ -109,7 +109,11 @@ class DataLoader():
     def imread(self, path):
         ds = pydicom.dcmread(path)
         arr = dcm_util.apply_modality_lut(ds.pixel_array, ds)
-        arr = ((arr-MIN_VAL)/(MAX_VAL-MIN_VAL)).clip(0,1)
+        arr = arr.astype(np.float)
+        arr = np.expand_dims(arr,axis=-1)
+        # shape 512,512,1
+        arr = (((arr-MIN_VAL)/(MAX_VAL-MIN_VAL)).clip(0,1))*2-1.
+        # min,max -1,1
         return arr
 
 if __name__ == "__main__":
@@ -126,8 +130,8 @@ if __name__ == "__main__":
     batch_size = 8
     for n,batch in zip(range(1),dl.load_batch(batch_size=batch_size)):
         A, B = batch
-        A = (A*255).astype(np.uint8)
-        B = (B*255).astype(np.uint8)
+        A = (255*(A+1)/2).astype(np.uint8)
+        B = (255*(B+1)/2).astype(np.uint8)
         assert(A.shape==(batch_size,256,256))
         assert(B.shape==(batch_size,256,256))
         for n in range(batch_size):

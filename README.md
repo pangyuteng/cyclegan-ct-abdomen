@@ -14,10 +14,11 @@ bash build.sh
 + image download from tcia (contrast, no-contrast) 20 min.
 ```
 export MYDATA=/radraid/pteng/tmp
-docker run -it -v $PWD:/workdir -w /workdir -v $MYDATA:/mydata -p 6006:6006 cyclegan-ct-abdomen bash
-python download.py sample.csv /mydata/raw
+docker run -it -v $PWD:/workdir -w /workdir -v $MYDATA:/mydata -u $(id -u):$(id -g) -p 6006:6006 cyclegan-ct-abdomen bash
+# python download.py sample.csv /mydata/raw
 # api not functioning today https://github.com/TCIA-Community/TCIA-API-SDK/pull/1#issuecomment-1076581509
 # instead used java app, `NBIA Data Retriever`
+
 ```
 
 + create csv file to seperate phases.
