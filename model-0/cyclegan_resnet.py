@@ -239,7 +239,7 @@ class CycleGAN():
         r, c = 2, 3
 
         imgs_A = self.data_loader.load_data(domain="noncontrast", batch_size=1)
-        imgs_B = self.data_loader.load_data(domain="arterial", batch_size=1)
+        imgs_B = self.data_loader.load_data(domain="late", batch_size=1)
 
         # Translate images to the other domain
         fake_B = self.g_AB.predict(imgs_A)
@@ -269,4 +269,4 @@ class CycleGAN():
 
 if __name__ == '__main__':
     gan = CycleGAN()    
-    gan.train(epochs=200, batch_size=8, sample_interval=200)
+    gan.train(epochs=200, batch_size=1, sample_interval=200)

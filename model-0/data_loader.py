@@ -59,7 +59,7 @@ class DataLoader():
     def load_batch(self, batch_size=1):
 
         path_A = list(self.mydf[self.mydf.series_description=="noncontrast"].dcm_file)
-        path_B = list(self.mydf[self.mydf.series_description=="arterial"].dcm_file)
+        path_B = list(self.mydf[self.mydf.series_description=="late"].dcm_file)
 
         self.n_batches = int(min(len(path_A), len(path_B)) / batch_size)
         total_samples = self.n_batches * batch_size
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     out = dl.load_data("noncontrast",batch_size=2)
     assert(out.shape==(2,256,256))
     
-    out = dl.load_data("arterial",batch_size=2)
+    out = dl.load_data("late",batch_size=2)
     assert(out.shape==(2,256,256))
     batch_size = 8
     for n,batch in zip(range(1),dl.load_batch(batch_size=batch_size)):
@@ -136,7 +136,7 @@ if __name__ == "__main__":
         assert(B.shape==(batch_size,256,256))
         for n in range(batch_size):
             imageio.imwrite(f"static/noncontrast-{n}.png",A[n,:,:].squeeze())
-            imageio.imwrite(f"static/arterial-{n}.png",B[n,:,:].squeeze())
+            imageio.imwrite(f"static/late-{n}.png",B[n,:,:].squeeze())
 
     print("done.")
 
