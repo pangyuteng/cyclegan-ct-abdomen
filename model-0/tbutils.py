@@ -45,6 +45,7 @@ class MetricSummaryCallback(tf.keras.callbacks.Callback):
                 self.file_writer.flush()
             
             mydict['count']=self.count
+            mydict['epoch']=epoch
             with open(os.path.join(self.logdir,f"metrics-{self.tstamp}.json"),'a+') as f:
                 f.write(json.dumps(mydict)+"\n")
 
